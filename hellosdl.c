@@ -1,8 +1,10 @@
-#include <stdio.h>
-
+#include <stdio.h> 
+#include <stdlib.h>
+#include <SDL3/SDL.h>
+ 
 int main()
 {
     printf("Hello, SDL is Working Fine!");
 
-    return 0;
+    return EXIT_SUCCESS;
 }

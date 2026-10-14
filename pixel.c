@@ -3,8 +3,8 @@
 #include <SDL3/SDL.h> 
 #include <stdint.h> // ---> For the unsigned integer
 
-#define WIDTH 320
-#define HEIGHT 220
+#define WIDTH 1240
+#define HEIGHT 730
 
 uint32_t framebuffer[WIDTH * HEIGHT];
 
@@ -35,15 +35,32 @@ int main()
         HEIGHT
     );
 
-    // Displaying the window
-    while(true)
+    uint8_t is_running = 1;
+    SDL_Event event;
+
+    while(is_running)
     {
+        //Poll the events
+        while(SDL_PollEvent(&event))
+        {
+            if(event.type == SDL_EVENT_QUIT)
+            {
+                is_running = 0;
+            }
+        }
+
+        // Displaying the window
         SDL_RenderClear(renderer);
         SDL_RenderPresent(renderer);
     }
+
+    SDL_DestroyTexture(texture);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
     
     printf("Window Generated Successfully");
 
+    SDL_Quit();
 
     return EXIT_SUCCESS;
 }

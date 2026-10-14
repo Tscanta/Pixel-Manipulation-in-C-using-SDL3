@@ -7,11 +7,25 @@
 #define HEIGHT 220
 
 uint32_t framebuffer[WIDTH * HEIGHT];
+const double target_frame = 1.0/60.0; // --> 0.016
 
 // Easier way to enter colors into the window
 void put_pixel(int x, int y, uint32_t color)
 {
+    if(x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
+    {
+        return;
+    }
     framebuffer [WIDTH * y + x] = color;
+}
+
+// Clears the FrameBuffer
+void clear(uint32_t color)
+{
+    for(int i=0;i<WIDTH*HEIGHT;i++)
+    {
+        framebuffer[i] = color;
+    }
 }
 
 int main()
@@ -66,6 +80,7 @@ int main()
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
 
     uint8_t is_running = 1;
+    uint32_t frame = 0;
     SDL_Event event;
 
     while(is_running)
@@ -81,7 +96,21 @@ int main()
             }
         }
 
-        put_pixel(WIDTH/2, HEIGHT/2, 0x00FF00); // Putting Green color at the center of the window 
+        clear(0xFFFFFF);
+
+        // FrameBuffer Manipulation
+        /*put_pixel(WIDTH/2, HEIGHT/2, 0x00FF00); // Putting Green color at the center of the window */
+ 
+        for(int y=0; y<HEIGHT; y++)
+        {
+            for(int x=frame%320; x<WIDTH; x++)
+            {
+                if(x%8==0 && y%8==0)
+                {
+                    put_pixel(x,y,0x000000);
+                }
+            }
+        }
 
         // Updating the texture - Copy the contents of the framebuffer to the texture
         SDL_UpdateTexture(
@@ -95,6 +124,18 @@ int main()
         SDL_RenderClear(renderer);
         SDL_RenderTexture(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);
+
+        uint64_t end = SDL_GetPerformanceCounter();
+        double elapsed = (double)(end - start) / (double)SDL_GetPerformanceFrequency();
+
+        // Cap the framerate to 60fps
+        if(elapsed < target_frame)
+        {
+            SDL_Delay((target_frame - elapsed) * 1000.0); // This will sleep until we reach the target fps of 60fps
+        }
+        
+        // Animating the frame
+        frame += 1;
     }
 
     SDL_DestroyTexture(texture);

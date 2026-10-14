@@ -80,6 +80,7 @@ int main()
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
 
     uint8_t is_running = 1;
+    uint32_t frame = 0;
     SDL_Event event;
 
     while(is_running)
@@ -102,7 +103,7 @@ int main()
  
         for(int y=0; y<HEIGHT; y++)
         {
-            for(int x=0; x<WIDTH; x++)
+            for(int x=frame%320; x<WIDTH; x++)
             {
                 if(x%8==0 && y%8==0)
                 {
@@ -132,6 +133,9 @@ int main()
         {
             SDL_Delay((target_frame - elapsed) * 1000.0); // This will sleep until we reach the target fps of 60fps
         }
+        
+        // Animating the frame
+        frame += 1;
     }
 
     SDL_DestroyTexture(texture);
